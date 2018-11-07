@@ -5,14 +5,25 @@
  * @description 
  * 
  */
+
 package peval1;
+
 
 /**
  * Class Coche
  */
 public class Coche implements Runnable{
+	/**
+	 * @variable_name rio
+	 * @type Rio
+	 */
 	Rio rio;
+	/**
+	 * @variable_name t
+	 * @type Thread
+	 */
 	Thread t;
+	
 	/**
 	 * Class Coche Constructor
 	 */
@@ -24,25 +35,13 @@ public class Coche implements Runnable{
 	}
 
 	/**
-	 * Method
+	 * Método que ejecuta el hilo
 	 * @name run 
 	 * @overriden @see java.lang.Runnable#run()
 	 */
 	@Override
-	public void run() {
-		long time = Math.round(((Math.random() * 2) + 3));
-		/*try {
-			Thread.sleep(Math.round(((Math.random() * 100))));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
-		//System.out.println(t.getName() + " se aproxima");
+	public void run() {		
 		rio.Cruzar(t.getName());
-		/*try {
-			Thread.sleep(time * 1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
 		rio.SalirDeCruce(t.getName());					
 	}
 

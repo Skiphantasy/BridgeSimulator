@@ -5,6 +5,7 @@
  * @description 
  * 
  */
+
 package peval1;
 
 /**
@@ -20,8 +21,8 @@ public class Main {
 	public static void main(String[] args) {
 		 Thread t;
 		 Rio guadalmedina=new Rio();
-		 for(int i=0;i<10;i++){
-			t=new Thread(new Coche(i,guadalmedina));
+		 for(int i=0;i<100;i++){
+			 t=new Thread(new Coche(i,guadalmedina));
 			 t.start();
 			 t=new Thread(new Barco(i,guadalmedina));
 			 t.start();

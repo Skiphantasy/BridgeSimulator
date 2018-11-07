@@ -12,7 +12,6 @@ package peval1;
  */
 public class Rio {
 	private boolean puenteAbajo = true;
-	private boolean haAvisado = false;
 	private int avisos = 0;
 	private int barcosCruzando = 0;
 	private int cochesCruzando = 0;
@@ -41,7 +40,7 @@ public class Rio {
 				avisos--;
 			}
 		} else {			
-				while(haAvisado) {
+				while (avisos != 0) {
 					try {
 						wait();
 					} catch (InterruptedException e) {
@@ -84,7 +83,6 @@ public class Rio {
 	
 	public void Avisar(String vehiculo) {
 		System.out.println(vehiculo + " avisa al puente de mando");
-		haAvisado = true;
 		avisos++;
 	}
 	
@@ -92,7 +90,6 @@ public class Rio {
 		if(puenteAbajo && cochesCruzando == 0) {
 			System.out.println("--- SE HA LEVANTADO EL PUENTE ---");
 			puenteAbajo = false;
-			haAvisado = false;
 		} 
 	}
 	

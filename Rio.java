@@ -13,26 +13,12 @@ package peval1;
  * Class Rio
  */
 public class Rio {
+	
 	/**
-	 * @variable_name puenteAbajo
-	 * @type boolean
+	 * @variable_name objetos
+	 * @type ObjetosSync
 	 */
-	private boolean puenteAbajo = true;
-	/**
-	 * @variable_name avisos
-	 * @type int
-	 */
-	private int avisos = 0;
-	/**
-	 * @variable_name barcosCruzando
-	 * @type int
-	 */
-	private int barcosCruzando = 0;
-	/**
-	 * @variable_name cochesCruzando
-	 * @type int
-	 */
-	private int cochesCruzando = 0;
+	ObjetosSync objetos = new ObjetosSync();
 	
 	/**
 	 * Class Rio Constructor
@@ -45,39 +31,39 @@ public class Rio {
 	 * @name Cruzar
 	 * @param vehiculo 
 	 */
-	public synchronized void Cruzar(String vehiculo) {
-		
-		if(vehiculo.startsWith("B")) {
-			if (puenteAbajo) {
-				System.out.println(vehiculo + " ha intentado cruzar pero el puente está bajado");
-				while(puenteAbajo) {
+	public void Cruzar(String vehiculo) {
+		synchronized (objetos) {
+			if(vehiculo.startsWith("B")) {
+				if (objetos.isPuenteAbajo()) {
+					System.out.println(vehiculo + " ha intentado cruzar pero el puente está bajado");
+					while(objetos.isPuenteAbajo()) {
+						try {
+							objetos.wait();
+						} catch (InterruptedException e) {
+							System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
+							e.printStackTrace();
+						}					
+					}
+				} else {
+					System.out.println(vehiculo + " está cruzando el puente");				
+					objetos.setBarcosCruzando(objetos.getBarcosCruzando() + 1);
+					objetos.setAvisos(objetos.getAvisos() - 1);
+				}
+			} else {	
+				if (objetos.getAvisos() != 0) {
 					try {
-						wait();
+						objetos.wait();
 					} catch (InterruptedException e) {
 						System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
 						e.printStackTrace();
-					}					
+					}
 				}
-			} else {
-				System.out.println(vehiculo + " está cruzando el puente");				
-				barcosCruzando++;
-				avisos--;
-			}
-		} else {	
-			if (avisos != 0) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-					e.printStackTrace();
-				}
-			}
-			 if (!puenteAbajo)  {					
+				if (!objetos.isPuenteAbajo())  {					
 					System.out.println(vehiculo + " ha intentado cruzar pero el puente está subido");
 					
-					while(!puenteAbajo) {
+					while(!objetos.isPuenteAbajo()) {
 						try {
-							wait();
+							objetos.wait();
 						} catch (InterruptedException e) {
 							System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
 							e.printStackTrace();
@@ -85,7 +71,8 @@ public class Rio {
 					}
 				}
 				System.out.println(vehiculo + " está cruzando el puente");
-				cochesCruzando++;		
+				objetos.setCochesCruzando(objetos.getCochesCruzando() + 1);		
+			}
 		}
 	}
 	
@@ -94,35 +81,38 @@ public class Rio {
 	 * @name SalirDeCruce
 	 * @param vehiculo 
 	 */
-	public synchronized void SalirDeCruce(String vehiculo) {
-		System.out.println(vehiculo + " ha salido del cruce");
-		if(vehiculo.startsWith("B")) {
-			barcosCruzando--;
-			if(barcosCruzando == 0 && avisos == 0) {
-				puenteAbajo = true;
-				System.out.println("--- SE HA BAJADO EL PUENTE ---");
+	public void SalirDeCruce(String vehiculo) {
+		synchronized (objetos) {
+			System.out.println(vehiculo + " ha salido del cruce");
+			if(vehiculo.startsWith("B")) {
+				objetos.setBarcosCruzando(objetos.getBarcosCruzando() - 1);	
+				
+				if(objetos.getBarcosCruzando() == 0 && objetos.getAvisos() == 0) {
+					objetos.setPuenteAbajo(true);
+					System.out.println("--- SE HA BAJADO EL PUENTE ---");
+				} else {
+					try {
+						objetos.wait();
+					} catch (InterruptedException e) {
+						System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
+						e.printStackTrace();
+					}
+				}
 			} else {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-					e.printStackTrace();
+				objetos.setCochesCruzando(objetos.getCochesCruzando() - 1);	
+				
+				if(objetos.getCochesCruzando() != 0) {
+					try {
+						objetos.wait();
+					} catch (InterruptedException e) {
+						System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
+						e.printStackTrace();
+					}
 				}
 			}
-		} else {
-			cochesCruzando--;
 			
-			if(cochesCruzando != 0) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-					e.printStackTrace();
-				}
-			}
+			objetos.notifyAll();
 		}
-
-		notifyAll();
 	}
 	
 	/**
@@ -131,19 +121,23 @@ public class Rio {
 	 * @param vehiculo 
 	 */
 	public void Avisar(String vehiculo) {
-		System.out.println(vehiculo + " avisa al puente de mando");
-		avisos++;
+		synchronized (objetos) {
+			System.out.println(vehiculo + " avisa al puente de mando");
+			objetos.setAvisos(objetos.getAvisos() + 1);	
+		}
 	}
 	
 	/**
 	 * Método para levantar el puente para que pasen los barcos
 	 * @name LevantarPuente 
 	 */
-	public synchronized void LevantarPuente() {
-		if(puenteAbajo && cochesCruzando == 0) {
-			System.out.println("--- SE HA LEVANTADO EL PUENTE ---");
-			puenteAbajo = false;
-		} 
+	public void LevantarPuente() {
+		synchronized (objetos) {
+			if(objetos.isPuenteAbajo() && objetos.getCochesCruzando() == 0) {
+				System.out.println("--- SE HA LEVANTADO EL PUENTE ---");
+				objetos.setPuenteAbajo(false);
+			} 	
+		}
 	}
 	
 	/**
@@ -152,16 +146,6 @@ public class Rio {
 	 * @return puenteAbajo 
 	 */
 	public boolean isPuenteAbajo() {
-		return puenteAbajo;
+		return objetos.isPuenteAbajo();
 	}
-
-	/**
-	 * Setter del booleano puenteAbajo
-	 * @name setPuenteAbajo
-	 * @param puenteAbajo 
-	 */
-	public void setPuenteAbajo(boolean puenteAbajo) {
-		this.puenteAbajo = puenteAbajo;
-	}
-
 }

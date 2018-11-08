@@ -40,9 +40,10 @@ public class Coche implements Runnable{
 	 * @overriden @see java.lang.Runnable#run()
 	 */
 	@Override
-	public void run() {		
-		rio.Cruzar(t.getName());
-		rio.SalirDeCruce(t.getName());					
+	public void run() {			
+		rio.Cruzar(t.getName());		
+		rio.SalirDeCruce(t.getName());
+		rio.LevantarPuente();
 	}
 
 }

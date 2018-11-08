@@ -41,9 +41,13 @@ public class Rio {
 							objetos.wait();
 						} catch (InterruptedException e) {
 							System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-							e.printStackTrace();
+							//e.printStackTrace();
 						}					
 					}
+					
+					System.out.println(">>" + vehiculo + " está cruzando el puente");				
+					objetos.setBarcosCruzando(objetos.getBarcosCruzando() + 1);
+					objetos.setAvisos(objetos.getAvisos() - 1);
 				} else {
 					System.out.println(">>" + vehiculo + " está cruzando el puente");				
 					objetos.setBarcosCruzando(objetos.getBarcosCruzando() + 1);
@@ -55,7 +59,7 @@ public class Rio {
 						objetos.wait();
 					} catch (InterruptedException e) {
 						System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 				}
 				if (!objetos.isPuenteAbajo())  {					
@@ -66,12 +70,12 @@ public class Rio {
 							objetos.wait();
 						} catch (InterruptedException e) {
 							System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-							e.printStackTrace();
+							//e.printStackTrace();
 						}												
 					}
 				}
 				System.out.println(">>" + vehiculo + " está cruzando el puente");
-				objetos.setCochesCruzando(objetos.getCochesCruzando() + 1);		
+				objetos.setCochesCruzando(objetos.getCochesCruzando() + 1);					
 			}
 		}
 	}
@@ -95,7 +99,7 @@ public class Rio {
 						objetos.wait();
 					} catch (InterruptedException e) {
 						System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 				}
 			} else {
@@ -106,11 +110,11 @@ public class Rio {
 						objetos.wait();
 					} catch (InterruptedException e) {
 						System.out.println("Error. Se ha interrumpido el estado de espera de " +  vehiculo);
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 				}
 			}
-			
+
 			objetos.notifyAll();
 		}
 	}
@@ -121,6 +125,7 @@ public class Rio {
 	 * @param vehiculo 
 	 */
 	public void Avisar(String vehiculo) {
+		
 		synchronized (objetos) {
 			System.out.println("~~" + vehiculo + " avisa al puente de mando");
 			objetos.setAvisos(objetos.getAvisos() + 1);	
@@ -133,7 +138,7 @@ public class Rio {
 	 */
 	public void LevantarPuente() {
 		synchronized (objetos) {
-			if(objetos.isPuenteAbajo() && objetos.getCochesCruzando() == 0) {
+			if(objetos.isPuenteAbajo() && objetos.getCochesCruzando() == 0 && objetos.getAvisos() != 0) {
 				System.out.println("///------ SE HA LEVANTADO EL PUENTE ------///");
 				objetos.setPuenteAbajo(false);
 			} 	

@@ -40,11 +40,9 @@ public class Barco implements Runnable{
 	 * @overriden @see java.lang.Runnable#run()
 	 */
 	@Override
-	public void run() {		
-		rio.Avisar(t.getName());
-		while(rio.isPuenteAbajo()) {
-			rio.LevantarPuente();				
-		}
+	public void run() {			
+		rio.Avisar(t.getName());		
+		rio.LevantarPuente();				
 		rio.Cruzar(t.getName());
 		rio.SalirDeCruce(t.getName());
 	}

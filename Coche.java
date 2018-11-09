@@ -41,9 +41,20 @@ public class Coche implements Runnable{
 	 */
 	@Override
 	public void run() {			
-		rio.Cruzar(t.getName());		
+		rio.Cruzar(t.getName());
+		/*try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		rio.SalirDeCruce(t.getName());
-		rio.LevantarPuente();
+		/*try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 
 }

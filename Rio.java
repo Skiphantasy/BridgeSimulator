@@ -37,6 +37,7 @@ public class Rio {
 
 				while(objetos.isPuenteAbajo()) {
 					System.out.println(vehiculo + " ha intentado cruzar pero el puente está bajado");
+					
 					try {
 						objetos.wait();
 					} catch (InterruptedException e) {
@@ -84,6 +85,7 @@ public class Rio {
 	public void SalirDeCruce(String vehiculo) {
 		synchronized (objetos) {
 			System.out.println("<<" + vehiculo + " ha salido del cruce");
+			
 			if(vehiculo.startsWith("B")) {
 				objetos.setBarcosCruzando(objetos.getBarcosCruzando() - 1);	
 				
@@ -109,6 +111,7 @@ public class Rio {
 						//e.printStackTrace();
 					}
 				}
+				
 				LevantarPuente();
 			}
 
@@ -139,7 +142,6 @@ public class Rio {
 				System.out.println("///------ SE HA LEVANTADO EL PUENTE ------///");
 				objetos.setPuenteAbajo(false);
 			} 	
-			//objetos.notifyAll();
 		}
 	}
 	
